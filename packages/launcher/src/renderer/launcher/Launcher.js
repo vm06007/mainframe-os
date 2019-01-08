@@ -31,7 +31,7 @@ const ContentContainer = styled.View`
 
 const LoadingContainer = styled.View`
   flex: 1;
-  justify-content: 'center';
+  justify-content: center;
 `
 
 const Header = styled.View`
