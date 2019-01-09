@@ -44,7 +44,6 @@ const FormContainer = styled.View`
 
 const BgImage = styled.Image`
   flex: 1;
-  text-align: right;
 `
 
 export default class OnboardContainerView extends Component<Props> {
