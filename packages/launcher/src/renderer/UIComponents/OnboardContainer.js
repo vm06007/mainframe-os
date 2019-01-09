@@ -3,8 +3,11 @@
 import React, { Component } from 'react'
 
 import styled from 'styled-components/native'
+import { StyleSheet } from 'react-native-web'
 
-import { Text } from '@morpheus-ui/core'
+// import { Text } from '@morpheus-ui/core'
+import Text from '../UIComponents/Text'
+
 import bgGraphic from '../../assets/images/onboard-background.png'
 
 type Props = {
@@ -47,9 +50,7 @@ const BgImage = styled.Image`
 export default class OnboardContainerView extends Component<Props> {
   render() {
     const description = this.props.description ? (
-      <Text variant="regular" size={16}>
-        {this.props.description}
-      </Text>
+      <Text style={styles.description}>{this.props.description}</Text>
     ) : null
     return (
       <Container>
@@ -69,3 +70,12 @@ export default class OnboardContainerView extends Component<Props> {
     )
   }
 }
+
+const PADDING = 10
+
+const styles = StyleSheet.create({
+  description: {
+    fontSize: 14,
+    paddingBottom: PADDING * 2,
+  },
+})
