@@ -14,7 +14,9 @@
   },
   "dependencies": {
     "@babel/runtime": "^7.1.2",
+    "eth-contract-metadata": "github:MainframeHQ/eth-contract-metadata#master",
     "ethereumjs-abi": "^0.6.5",
+    "human-standard-token-abi": "^2.0.0",
     "web3-provider-engine": "^14.1.0"
   },
   "devDependencies": {
