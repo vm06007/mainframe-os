@@ -8,8 +8,8 @@ import { ipcRenderer } from 'electron'
 import '@morpheus-ui/fonts'
 import './styles.css'
 
-import Launcher from './launcher/Launcher.js'
-import AppContainer from './app/AppContainer.js'
+import Launcher from './launcher/App'
+import AppContainer from './app/AppContainer'
 
 const callback = () => ipcRenderer.send('ready-window')
 const rootTag = document.getElementById('app')

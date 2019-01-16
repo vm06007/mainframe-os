@@ -129,7 +129,6 @@ const appPermissionSettings = new GraphQLObjectType({
   fields: () => ({
     permissionsChecked: {
       type: new GraphQLNonNull(GraphQLBoolean),
-      resolve: self => self.permissionsChecked,
     },
     grants: {
       type: new GraphQLNonNull(appPermissionGrants),
@@ -183,11 +182,9 @@ const appPermissionsRequirements = new GraphQLObjectType({
   fields: () => ({
     optional: {
       type: new GraphQLNonNull(appPermissionDefinitions),
-      resolve: self => self.optional,
     },
     required: {
       type: new GraphQLNonNull(appPermissionDefinitions),
-      resolve: self => self.required,
     },
   }),
 })
@@ -197,11 +194,9 @@ const appAuthorType = new GraphQLObjectType({
   fields: () => ({
     id: {
       type: GraphQLString,
-      resolve: self => self.id,
     },
     name: {
       type: GraphQLString,
-      resolve: self => self.name,
     },
   }),
 })
@@ -211,15 +206,12 @@ const appManifestData = new GraphQLObjectType({
   fields: () => ({
     name: {
       type: new GraphQLNonNull(GraphQLString),
-      resolve: self => self.name,
     },
     version: {
       type: new GraphQLNonNull(GraphQLString),
-      resolve: self => self.version,
     },
     permissions: {
       type: new GraphQLNonNull(appPermissionsRequirements),
-      resolve: self => self.permissions,
     },
     author: {
       type: new GraphQLNonNull(appAuthorType),
@@ -236,7 +228,6 @@ const appVersionData = new GraphQLObjectType({
     },
     permissions: {
       type: new GraphQLNonNull(appPermissionsRequirements),
-      resolve: self => self.permissions,
     },
     publicationState: {
       type: new GraphQLNonNull(GraphQLString),
@@ -259,7 +250,6 @@ const appType = new GraphQLObjectType({
     },
     manifest: {
       type: new GraphQLNonNull(appManifestData),
-      resolve: self => self.manifest,
     },
     users: {
       type: new GraphQLList(appUser),
@@ -324,7 +314,6 @@ const userWalletType = new GraphQLObjectType({
   fields: () => ({
     localID: {
       type: new GraphQLNonNull(GraphQLID),
-      resolve: self => self.localID,
     },
     accounts: {
       type: new GraphQLList(GraphQLString),
@@ -341,7 +330,6 @@ const ownAppIdentityType = new GraphQLObjectType({
     // TODO: consistent id naming
     localID: {
       type: new GraphQLNonNull(GraphQLID),
-      resolve: self => self.localID,
     },
     mfid: {
       type: new GraphQLNonNull(GraphQLID),
@@ -360,7 +348,6 @@ const ownDeveloperIdentityType = new GraphQLObjectType({
     id: idResolver,
     localID: {
       type: new GraphQLNonNull(GraphQLID),
-      resolve: self => self.localID,
     },
     mfid: {
       type: new GraphQLNonNull(GraphQLID),
@@ -391,7 +378,6 @@ const ownUserIdentityType = new GraphQLObjectType({
     id: idResolver,
     localID: {
       type: new GraphQLNonNull(GraphQLID),
-      resolve: self => self.localID,
     },
     mfid: {
       type: new GraphQLNonNull(GraphQLID),
@@ -440,7 +426,6 @@ const peerAppIdentityType = new GraphQLObjectType({
     id: idResolver,
     localID: {
       type: new GraphQLNonNull(GraphQLID),
-      resolve: self => self.localID,
     },
     pubKey: {
       type: new GraphQLNonNull(GraphQLString),
@@ -455,7 +440,6 @@ const peerDeveloperIdentityType = new GraphQLObjectType({
     id: idResolver,
     localID: {
       type: new GraphQLNonNull(GraphQLID),
-      resolve: self => self.localID,
     },
     pubKey: {
       type: new GraphQLNonNull(GraphQLString),
@@ -470,10 +454,67 @@ const peerUserIdentityType = new GraphQLObjectType({
     id: idResolver,
     localID: {
       type: new GraphQLNonNull(GraphQLID),
-      resolve: self => self.localID,
     },
     pubKey: {
       type: new GraphQLNonNull(GraphQLString),
+    },
+  }),
+})
+
+const contactProfileType = new GraphQLObjectType({
+  name: 'ContactProfile',
+  fields: () => ({
+    name: {
+      type: GraphQLNonNull(GraphQLString),
+    },
+    avatar: {
+      type: GraphQLString,
+    },
+  }),
+})
+
+const contactConnectionType = new GraphQLEnumType({
+  name: 'ContactConnection',
+  values: {
+    CONNECTED: { value: 'connected' },
+    SENT: { value: 'sent' },
+  },
+})
+
+const contactType = new GraphQLObjectType({
+  name: 'Contact',
+  interfaces: () => [nodeInterface],
+  fields: () => ({
+    id: idResolver,
+    localID: {
+      type: new GraphQLNonNull(GraphQLID),
+    },
+    peerID: {
+      type: new GraphQLNonNull(GraphQLID),
+    },
+    pubKey: {
+      type: new GraphQLNonNull(GraphQLString),
+    },
+    profile: {
+      type: new GraphQLNonNull(contactProfileType),
+    },
+    connectionState: {
+      type: new GraphQLNonNull(contactConnectionType),
+    },
+  }),
+})
+
+const contactsQueryType = new GraphQLObjectType({
+  name: 'ContactsQuery',
+  fields: () => ({
+    userContacts: {
+      type: new GraphQLList(contactType),
+      args: {
+        userID: { type: new GraphQLNonNull(GraphQLString) },
+      },
+      resolve: (self, args, ctx) => {
+        return ctx.openVault.identities.getUserContacts(args.userID)
+      },
     },
   }),
 })
@@ -521,11 +562,9 @@ const ethLedgerWalletType = new GraphQLObjectType({
     id: idResolver,
     localID: {
       type: new GraphQLNonNull(GraphQLID),
-      resolve: self => self.localID,
     },
     accounts: {
       type: new GraphQLList(namedWalletAccountType),
-      resolve: self => self.accounts,
     },
   }),
 })
@@ -555,11 +594,9 @@ const namedWalletAccountType = new GraphQLObjectType({
   fields: () => ({
     name: {
       type: new GraphQLNonNull(GraphQLString),
-      resolve: self => self.name,
     },
     address: {
       type: new GraphQLNonNull(GraphQLString),
-      resolve: self => self.address,
     },
     balances: {
       type: new GraphQLNonNull(walletBalancesType),
@@ -575,11 +612,9 @@ const ethHdWalletType = new GraphQLObjectType({
     id: idResolver,
     localID: {
       type: new GraphQLNonNull(GraphQLID),
-      resolve: self => self.localID,
     },
     accounts: {
       type: new GraphQLList(namedWalletAccountType),
-      resolve: self => self.accounts,
     },
   }),
 })
@@ -633,6 +668,10 @@ const viewerType = new GraphQLObjectType({
     },
     apps: {
       type: new GraphQLNonNull(appsQueryType),
+      resolve: () => ({}),
+    },
+    contacts: {
+      type: new GraphQLNonNull(contactsQueryType),
       resolve: () => ({}),
     },
     identities: {
@@ -894,6 +933,59 @@ const createDeveloperIdentityMutation = mutationWithClientMutationId({
   },
 })
 
+const addContactMutation = mutationWithClientMutationId({
+  name: 'AddContact',
+  inputFields: {
+    userID: {
+      type: new GraphQLNonNull(GraphQLString),
+    },
+    profile: {
+      type: new GraphQLNonNull(userProfileInput),
+    },
+    publicFeed: {
+      type: new GraphQLNonNull(GraphQLString),
+    },
+  },
+  outputFields: {
+    contact: {
+      type: contactType,
+      resolve: payload => payload.contact,
+    },
+    viewer: {
+      type: new GraphQLNonNull(viewerType),
+      resolve: () => ({}),
+    },
+  },
+  mutateAndGetPayload: async (args, ctx) => {
+    const contact = ctx.openVault.identities.addContact(
+      args.userID,
+      args.publicFeed,
+      args.profile,
+    )
+    await ctx.openVault.save()
+    return { contact }
+  },
+})
+
+const deleteContactMutation = mutationWithClientMutationId({
+  name: 'DeletContact',
+  inputFields: {
+    contactID: {
+      type: new GraphQLNonNull(GraphQLString),
+    },
+  },
+  outputFields: {
+    viewer: {
+      type: new GraphQLNonNull(viewerType),
+      resolve: () => ({}),
+    },
+  },
+  mutateAndGetPayload: async (args, ctx) => {
+    ctx.openVault.identities.deleteContact(args.userID, args.contactID)
+    await ctx.openVault.save()
+  },
+})
+
 const appPermissionDefinitionsInput = new GraphQLInputObjectType({
   name: 'AppPermissionDefinitionsInput',
   fields: () => ({
@@ -1083,6 +1175,8 @@ const mutationType = new GraphQLObjectType({
     addHDWalletAccount: addHDWalletAccountMutation,
     addLedgerWalletAccount: addLedgerWalletAccountMutation,
     deleteWallet: deleteWalletMutation,
+    addContact: addContactMutation,
+    deleteContact: deleteContactMutation,
   }),
 })
 
