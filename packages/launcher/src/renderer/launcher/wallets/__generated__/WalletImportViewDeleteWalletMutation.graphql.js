@@ -1,6 +1,6 @@
 /**
  * @flow
- * @relayHash b2428f07e4038bfd23e4b4dbf585d28b
+ * @relayHash 9d89075aca9ea48220f9d67cb4710881
  */
 
 /* eslint-disable */
@@ -16,7 +16,8 @@ export type DeleteWalletInput = {
   clientMutationId?: ?string,
 };
 export type WalletImportViewDeleteWalletMutationVariables = {|
-  input: DeleteWalletInput
+  input: DeleteWalletInput,
+  userID: string,
 |};
 export type WalletImportViewDeleteWalletMutationResponse = {|
   +deleteWallet: ?{|
@@ -37,24 +38,29 @@ export type WalletImportViewDeleteWalletMutation = {|
 /*
 mutation WalletImportViewDeleteWalletMutation(
   $input: DeleteWalletInput!
+  $userID: String!
 ) {
   deleteWallet(input: $input) {
     viewer {
       wallets {
-        ...WalletsView_wallets
+        ...WalletsView_wallets_3iqrP
       }
       id
     }
   }
 }
 
-fragment WalletsView_wallets on WalletsQuery {
-  ethWallets {
+fragment WalletsView_wallets_3iqrP on WalletsQuery {
+  ethWallets(userID: $userID) {
     hd {
       localID
       accounts {
         name
         address
+        balances {
+          eth
+          mft
+        }
       }
       id
     }
@@ -63,6 +69,10 @@ fragment WalletsView_wallets on WalletsQuery {
       accounts {
         name
         address
+        balances {
+          eth
+          mft
+        }
       }
       id
     }
@@ -76,6 +86,12 @@ var v0 = [
     "kind": "LocalArgument",
     "name": "input",
     "type": "DeleteWalletInput!",
+    "defaultValue": null
+  },
+  {
+    "kind": "LocalArgument",
+    "name": "userID",
+    "type": "String!",
     "defaultValue": null
   }
 ],
@@ -124,6 +140,31 @@ v3 = [
         "name": "address",
         "args": null,
         "storageKey": null
+      },
+      {
+        "kind": "LinkedField",
+        "alias": null,
+        "name": "balances",
+        "storageKey": null,
+        "args": null,
+        "concreteType": "WalletBalancesType",
+        "plural": false,
+        "selections": [
+          {
+            "kind": "ScalarField",
+            "alias": null,
+            "name": "eth",
+            "args": null,
+            "storageKey": null
+          },
+          {
+            "kind": "ScalarField",
+            "alias": null,
+            "name": "mft",
+            "args": null,
+            "storageKey": null
+          }
+        ]
       }
     ]
   },
@@ -134,7 +175,7 @@ return {
   "operationKind": "mutation",
   "name": "WalletImportViewDeleteWalletMutation",
   "id": null,
-  "text": "mutation WalletImportViewDeleteWalletMutation(\n  $input: DeleteWalletInput!\n) {\n  deleteWallet(input: $input) {\n    viewer {\n      wallets {\n        ...WalletsView_wallets\n      }\n      id\n    }\n  }\n}\n\nfragment WalletsView_wallets on WalletsQuery {\n  ethWallets {\n    hd {\n      localID\n      accounts {\n        name\n        address\n      }\n      id\n    }\n    ledger {\n      localID\n      accounts {\n        name\n        address\n      }\n      id\n    }\n  }\n}\n",
+  "text": "mutation WalletImportViewDeleteWalletMutation(\n  $input: DeleteWalletInput!\n  $userID: String!\n) {\n  deleteWallet(input: $input) {\n    viewer {\n      wallets {\n        ...WalletsView_wallets_3iqrP\n      }\n      id\n    }\n  }\n}\n\nfragment WalletsView_wallets_3iqrP on WalletsQuery {\n  ethWallets(userID: $userID) {\n    hd {\n      localID\n      accounts {\n        name\n        address\n        balances {\n          eth\n          mft\n        }\n      }\n      id\n    }\n    ledger {\n      localID\n      accounts {\n        name\n        address\n        balances {\n          eth\n          mft\n        }\n      }\n      id\n    }\n  }\n}\n",
   "metadata": {},
   "fragment": {
     "kind": "Fragment",
@@ -173,7 +214,14 @@ return {
                   {
                     "kind": "FragmentSpread",
                     "name": "WalletsView_wallets",
-                    "args": null
+                    "args": [
+                      {
+                        "kind": "Variable",
+                        "name": "userID",
+                        "variableName": "userID",
+                        "type": null
+                      }
+                    ]
                   }
                 ]
               }
@@ -220,7 +268,14 @@ return {
                     "alias": null,
                     "name": "ethWallets",
                     "storageKey": null,
-                    "args": null,
+                    "args": [
+                      {
+                        "kind": "Variable",
+                        "name": "userID",
+                        "variableName": "userID",
+                        "type": "String!"
+                      }
+                    ],
                     "concreteType": "EthWallets",
                     "plural": false,
                     "selections": [
@@ -258,5 +313,5 @@ return {
 };
 })();
 // prettier-ignore
-(node/*: any*/).hash = '5f51a4fe5edef6f02e17725d8984afa6';
+(node/*: any*/).hash = '03fde9fd2ff51f61ebcbdb50e52902e8';
 module.exports = node;

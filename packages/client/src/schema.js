@@ -228,7 +228,7 @@ export const WALLET_IMPORT_MNEMONIC_SCHEMA = {
 export const WALLET_DELETE_SCHEMA = {
   chain: WALLET_SUPPORTED_CHAIN_SCHEMA,
   type: WALLET_TYPE_SCHEMA,
-  walletID: LOCAL_ID_SCHEMA,
+  localID: LOCAL_ID_SCHEMA,
 }
 
 export const WALLET_GET_LEDGER_ETH_ACCOUNTS_SCHEMA = {
@@ -241,7 +241,7 @@ export const WALLET_ADD_LEDGER_ETH_ACCOUNT_SCHEMA = {
 }
 
 export const WALLET_ADD_HD_ACCOUNT_SCHEMA = {
-  walletID: 'string',
+  localID: 'string',
   index: 'number',
 }
 
@@ -254,9 +254,24 @@ export const ETH_TRANSACTION_SCHEMA = {
   gasPrice: 'string',
 }
 
+export const ETH_REQUEST_SCHEMA = {
+  id: 'number',
+  jsonrpc: 'string',
+  method: 'string',
+  params: { type: 'array', items: 'any' },
+}
+
 export const WALLET_SIGN_ETH_TRANSACTION_SCHEMA = ETH_TRANSACTION_SCHEMA
 
 export const WALLET_SIGN_TRANSACTION_SCHEMA = {
   chain: WALLET_SUPPORTED_CHAIN_SCHEMA,
   transactionData: 'object',
+}
+
+export const WALLET_GET_USER_ETH_ACCOUNTS_SCHEMA = {
+  userID: 'string',
+}
+
+export const WALLET_GET_USER_ETH_WALLETS_SCHEMA = {
+  userID: 'string',
 }

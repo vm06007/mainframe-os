@@ -9,7 +9,11 @@ import { EnvironmentContext } from '../RelayEnvironment'
 import WalletImportView from './WalletImportView'
 import WalletAddLedgerModal from './WalletAddLedgerModal'
 
-export type WalletAccounts = Array<{ name: string, address: string }>
+export type WalletAccounts = Array<{
+  name: string,
+  address: string,
+  balances: { mft: string, eth: string },
+}>
 
 export type Wallet = {
   localID: string,
@@ -25,6 +29,7 @@ export type Wallets = {
 
 type Props = {
   wallets: Wallets,
+  userID: string,
 }
 
 type State = {
@@ -51,7 +56,10 @@ const WalletTypeLabel = styled.Text`
 `
 
 const createWalletMutation = graphql`
-  mutation WalletsViewCreateHDWalletMutation($input: CreateHDWalletInput!) {
+  mutation WalletsViewCreateHDWalletMutation(
+    $input: CreateHDWalletInput!
+    $userID: String!
+  ) {
     createHDWallet(input: $input) {
       hdWallet {
         accounts {
@@ -62,7 +70,7 @@ const createWalletMutation = graphql`
       }
       viewer {
         wallets {
-          ...WalletsView_wallets
+          ...WalletsView_wallets @arguments(userID: $userID)
         }
       }
     }
@@ -72,12 +80,13 @@ const createWalletMutation = graphql`
 const addWalletMutation = graphql`
   mutation WalletsViewAddHDWalletAccountMutation(
     $input: AddHDWalletAccountInput!
+    $userID: String!
   ) {
     addHDWalletAccount(input: $input) {
       address
       viewer {
         wallets {
-          ...WalletsView_wallets
+          ...WalletsView_wallets @arguments(userID: $userID)
         }
       }
     }
@@ -97,18 +106,23 @@ class WalletsView extends Component<Props, State> {
       walletMutation = addWalletMutation
       input = {
         walletID: ethWallets.hd[0].localID,
+        linkToUserId: this.props.userID,
         index: newIndex,
         name: `Account ${newIndex + 1}`,
       }
     } else {
       walletMutation = createWalletMutation
-      input = { type: 'ETHEREUM', name: 'Account 1' }
+      input = {
+        type: 'ETHEREUM',
+        name: 'Account 1',
+        linkToUserId: this.props.userID,
+      }
     }
 
     commitMutation(this.context, {
       mutation: walletMutation,
       // $FlowFixMe: Relay type
-      variables: { input },
+      variables: { input, userID: this.props.userID },
       onError: err => {
         const msg =
           err.message || 'Sorry, there was a problem creating the wallet.'
@@ -146,13 +160,17 @@ class WalletsView extends Component<Props, State> {
       <WalletImportView
         onClose={this.onCloseModal}
         currentWalletID={currentWallet}
+        userID={this.props.userID}
       />
     ) : null
   }
 
   renderConnectLedgerView() {
     return this.state.showModal === 'connect_ledger' ? (
-      <WalletAddLedgerModal onClose={this.onCloseModal} />
+      <WalletAddLedgerModal
+        userID={this.props.userID}
+        onClose={this.onCloseModal}
+      />
     ) : null
   }
 
@@ -162,6 +180,8 @@ class WalletsView extends Component<Props, State> {
         <WalletView key={a.address}>
           <Text>{a.name}</Text>
           <Text>{a.address}</Text>
+          <Text>ETH: {a.balances.eth}</Text>
+          <Text>MFT: {a.balances.mft}</Text>
         </WalletView>
       )
     })
@@ -218,13 +238,18 @@ class WalletsView extends Component<Props, State> {
 
 export default createFragmentContainer(WalletsView, {
   wallets: graphql`
-    fragment WalletsView_wallets on WalletsQuery {
-      ethWallets {
+    fragment WalletsView_wallets on WalletsQuery
+      @argumentDefinitions(userID: { type: "String!" }) {
+      ethWallets(userID: $userID) {
         hd {
           localID
           accounts {
             name
             address
+            balances {
+              eth
+              mft
+            }
           }
         }
         ledger {
@@ -232,6 +257,10 @@ export default createFragmentContainer(WalletsView, {
           accounts {
             name
             address
+            balances {
+              eth
+              mft
+            }
           }
         }
       }
