@@ -1,6 +1,6 @@
 /**
  * @flow
- * @relayHash 06a716dc804f5e84529fe5bd189a0c21
+ * @relayHash ad3511f11f396837a64e487a48f0b8b5
  */
 
 /* eslint-disable */
@@ -14,6 +14,7 @@ export type AddHDWalletAccountInput = {
   walletID: string,
   index: number,
   name: string,
+  linkToUserId: string,
   clientMutationId?: ?string,
 };
 export type WalletsViewAddHDWalletAccountMutationVariables = {|
