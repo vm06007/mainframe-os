@@ -2,7 +2,12 @@
 
 import React, { Component } from 'react'
 import styled from 'styled-components/native'
-import { graphql, commitMutation, createFragmentContainer } from 'react-relay'
+import {
+  graphql,
+  commitMutation,
+  createFragmentContainer,
+  fetchQuery,
+} from 'react-relay'
 import { debounce } from 'lodash'
 import { Text, Button, Row, Column, TextField } from '@morpheus-ui/core'
 import { Form, type FormSubmitPayload } from '@morpheus-ui/forms'
@@ -190,7 +195,14 @@ type Props = {
 type State = {
   modalOpen: boolean,
   error?: ?string,
-  publicKey?: ?string,
+  peerLookupHash?: ?string,
+  queryInProgress?: ?boolean,
+  foundPeer: {
+    profile: {
+      name: string,
+    },
+    publicKey: string,
+  },
 }
 
 export const addContactMutation = graphql`
@@ -223,12 +235,46 @@ export class ContactsView extends Component<Props, State> {
     this.setState({ modalOpen: false })
   }
 
+  lookupPeer = async (feedHash: string) => {
+    if (!feedHash || feedHash.length !== 64) {
+      this.setState({
+        foundPeer: undefined,
+        queryInProgress: false,
+      })
+      return
+    }
+    this.setState({
+      queryInProgress: true,
+    })
+    const query = graphql`
+      query ContactsViewQuery($feedHash: String!) {
+        peers {
+          peerLookupByFeed(feedHash: $feedHash) {
+            profile {
+              name
+            }
+            publicKey
+          }
+        }
+      }
+    `
+    console.log('feedHash: ', feedHash)
+    const peerQueryResult = await fetchQuery(this.context, query, {
+      feedHash,
+    })
+    console.log('peerQueryResult: ', peerQueryResult)
+    this.setState({
+      foundPeer: peerQueryResult.peers.peerLookupByFeed,
+      queryInProgress: false,
+    })
+  }
+
   submitNewContact = (payload: FormSubmitPayload) => {
     if (payload.valid) {
       this.setState({ error: null })
       const input = {
         userID: this.props.userID,
-        publicFeed: payload.fields.publicKey,
+        publicFeed: payload.fields.peerLookupHash,
         //TODO: get the proper user deta
         profile: {
           name: 'Unknown User ',
@@ -261,8 +307,9 @@ export class ContactsView extends Component<Props, State> {
   onFormChange = debounce(
     (payload: FormSubmitPayload) => {
       //TODO: should fetch the user data.
+      this.lookupPeer(payload.fields.peerLookupHash)
       this.setState({
-        publicKey: payload.fields.publicKey,
+        peerLookupHash: payload.fields.peerLookupHash,
       })
     },
     250,
@@ -337,10 +384,12 @@ export class ContactsView extends Component<Props, State> {
   }
 
   renderAddNewContactForm(modal: boolean) {
-    const errorMsg = this.state.error ? (
+    const { foundPeer, error } = this.state
+    console.log('found peer ', foundPeer)
+    const errorMsg = error ? (
       <Row size={1}>
         <Column>
-          <Text variant="error">{this.state.error}</Text>
+          <Text variant="error">{error}</Text>
         </Column>
       </Row>
     ) : null
@@ -360,16 +409,16 @@ export class ContactsView extends Component<Props, State> {
               </Column>
             )}
             <Column>
-              <TextField name="publicKey" required label="Mainframe ID" />
+              <TextField name="peerLookupHash" required label="Mainframe ID" />
             </Column>
-            {this.state.publicKey && (
+            {foundPeer && (
               <Column>
                 <AvatarWrapper>
                   <Blocky>
-                    <Avatar id={this.state.publicKey} size="small" />
+                    <Avatar id={foundPeer.publicKey} size="small" />
                   </Blocky>
                   <Text variant="greyDark23" size={13}>
-                    Unknown User
+                    {foundPeer.profile.name}
                   </Text>
                 </AvatarWrapper>
               </Column>
