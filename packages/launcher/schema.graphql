@@ -1,7 +1,7 @@
 input AddContactInput {
   userID: String!
-  profile: UserProfileInput!
   publicFeed: String!
+  aliasName: UserProfileInput!
   clientMutationId: String
 }
 

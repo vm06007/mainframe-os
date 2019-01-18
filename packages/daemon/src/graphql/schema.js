@@ -589,6 +589,7 @@ const peersQueryType = new GraphQLObjectType({
             publicKey: data.publicKey,
           }
         } catch (err) {
+          // eslint-disable-next-line no-console
           console.warn(err)
           return null
         }
@@ -980,11 +981,11 @@ const addContactMutation = mutationWithClientMutationId({
     userID: {
       type: new GraphQLNonNull(GraphQLString),
     },
-    profile: {
-      type: new GraphQLNonNull(userProfileInput),
-    },
     publicFeed: {
       type: new GraphQLNonNull(GraphQLString),
+    },
+    aliasName: {
+      type: GraphQLString,
     },
   },
   outputFields: {
@@ -997,8 +998,12 @@ const addContactMutation = mutationWithClientMutationId({
       resolve: () => ({}),
     },
   },
-  mutateAndGetPayload: async () => {
-    throw new Error('needs implementing')
+  mutateAndGetPayload: async (args, ctx) => {
+    return await ctx.mutations.createContactFromFeed(
+      args.userID,
+      args.publicFeed,
+      args.aliasName,
+    )
   },
 })
 
