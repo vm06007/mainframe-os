@@ -93,6 +93,23 @@ export default class EthHandler {
     return web3Utils.fromWei(res, 'ether')
   }
 
+  async transferToken(
+    tokenAddress: string,
+    destAddress: string,
+    transferAmount: number,
+  ): Promise<Object> {
+    const contract = new Web3Contract(ABI.ERC20, tokenAddress)
+    const data = contract.methods
+      .transfer(destAddress, transferAmount)
+      .encodeABI()
+    const transferTokenReq = this.createRequest('eth_send', [
+      { data, to: tokenAddress },
+      'latest',
+    ])
+    const res = await this.send(transferTokenReq)
+    return res
+  }
+
   async getMFTBalance(accountAddress: string): Promise<Object> {
     const tokenAddress = TOKEN_ADDRESS[this.network]
     if (!tokenAddress) {
@@ -109,4 +126,5 @@ export default class EthHandler {
     const res = await this.send(ethBalanceReq)
     return web3Utils.fromWei(res, 'ether')
   }
+
 }
