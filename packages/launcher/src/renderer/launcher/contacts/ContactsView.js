@@ -19,6 +19,8 @@ import PlusIcon from '@morpheus-ui/icons/PlusSymbolSm'
 import SearchIcon from '@morpheus-ui/icons/SearchSm'
 import CircleArrowRight from '@morpheus-ui/icons/CircleArrowRight'
 
+import { CopyToClipboard } from 'react-copy-to-clipboard'
+
 import { type CurrentUser } from '../LauncherContext'
 import { EnvironmentContext } from '../RelayEnvironment'
 import Avatar from '../../UIComponents/Avatar'
@@ -165,6 +167,19 @@ const InfoBox = styled.View`
   flex-direction: row;
   align-items: center;
   justify-content: center;
+`
+
+const AddressContainer = styled.View`
+  background-color: #f9f9f9;
+  padding: 30px 20px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: flex-start;
+`
+
+const AddressFlex = styled.View`
+  max-width: 90%;
 `
 
 export type Contact = {
@@ -929,7 +944,19 @@ class ContactsViewComponent extends Component<Props, State> {
               <Text variant="smallTitle" theme={{ padding: '20px 0 10px 0' }}>
                 Mainframe ID
               </Text>
-              <Text variant="addressLarge">{selectedContact.publicFeed}</Text>
+              <AddressContainer>
+                <AddressFlex>
+                  <Text variant="addressLargeNoBackground">
+                    {selectedContact.publicFeed}
+                  </Text>
+                </AddressFlex>
+                <CopyToClipboard text={selectedContact.publicFeed}>
+                  <Button
+                    title="COPY"
+                    variant={['extraSmall', 'completeOnboarding']}
+                  />
+                </CopyToClipboard>
+              </AddressContainer>
             </Column>
           </Row>
           {!selectedContact.profile.ethAddress && (

@@ -242,6 +242,11 @@ export default {
       titlePadding: '5px 10px',
       fontSize: 9,
     },
+    extraSmall: {
+      titlePadding: '2px 6px',
+      fontSize: 9,
+      borderRadius: 3,
+    },
     medium: {
       iconWidth: 14,
       iconHeight: 14,
@@ -450,6 +455,12 @@ export default {
       backgroundColor: '#F9F9F9',
       padding: '30px 20px',
       textAlign: 'center',
+      color: '#303030',
+      fontSize: 13,
+    },
+    addressLargeNoBackground: {
+      fontFamily: 'IBM Plex Mono',
+      textAlign: 'left',
       color: '#303030',
       fontSize: 13,
     },
