@@ -26,6 +26,7 @@ import SvgSelectedPointer from '../../UIComponents/SVGSelectedPointer'
 
 import FormModalView from '../../UIComponents/FormModalView'
 import Loader from '../../UIComponents/Loader'
+import InfoIcon from '../../UIComponents/Icons/InfoIcon'
 
 import type Identity from './__generated__/ContactsView_identities.graphql'
 
@@ -153,6 +154,17 @@ const AvatarWrapper = styled.View`
 
 const Blocky = styled.View`
   margin-right: 15px;
+`
+
+const InfoBox = styled.View`
+  width: 100%;
+  padding: 10px 15px;
+  border-width: 1px;
+  border-color: #00a7e7;
+  border-radius: 3px;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
 `
 
 export type Contact = {
@@ -920,6 +932,19 @@ class ContactsViewComponent extends Component<Props, State> {
               <Text variant="addressLarge">{selectedContact.publicFeed}</Text>
             </Column>
           </Row>
+          {!selectedContact.profile.ethAddress && (
+            <Row size={1}>
+              <Column>
+                <InfoBox>
+                  <InfoIcon width={36} height={18} color="#00A7E7" />
+                  <Text size={12} color="#00A7E7" variant="marginLeft15">
+                    Share your Mainframe ID with your contacts and let your
+                    friends add you on Mainframe OS
+                  </Text>
+                </InfoBox>
+              </Column>
+            </Row>
+          )}
           {selectedContact.profile.ethAddress && (
             <Row size={1}>
               <Column>
