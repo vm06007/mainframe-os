@@ -23,6 +23,6 @@
     "@mainframe/app-permissions": "^0.3.0",
     "@mainframe/rpc-stream": "^0.3.0",
     "@mainframe/utils-id": "^0.1.0",
-    "flow-bin": "^0.95.1"
+    "flow-bin": "^0.97.0"
   }
 }
