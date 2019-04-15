@@ -39,6 +39,7 @@ const vaultConfig = new VaultConfig(env)
 
 let client
 let launcherWindow
+let daemonProc
 
 type AppContexts = { [appID: string]: { [userID: string]: AppContext } }
 
@@ -258,7 +259,7 @@ const setupClient = async () => {
   if (daemonConfig.runStatus !== 'running') {
     daemonConfig.runStatus = 'stopped'
   }
-  await startDaemon(daemonConfig, true)
+  daemonProc = await startDaemon(daemonConfig)
   daemonConfig.runStatus = 'running'
   client = new Client(daemonConfig.socketPath)
 
@@ -305,6 +306,9 @@ const createLauncherWindow = async () => {
 const shutdown = async () => {
   daemonConfig.runStatus = 'stopped'
   await stopDaemon(daemonConfig)
+  if (daemonProc) {
+    daemonProc.kill()
+  }
 }
 
 app.on('ready', createLauncherWindow)
@@ -324,8 +328,10 @@ app.on('activate', () => {
   }
 })
 
-app.on('before-quit', () => {
-  shutdown()
+app.on('will-quit', async (event) => {
+  event.preventDefault()
+  await shutdown()
+  app.exit()
 })
 
 // Window lifecycle events
