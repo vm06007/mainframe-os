@@ -38,7 +38,7 @@
     "@erebos/keccak256": "^0.7.0",
     "@erebos/secp256k1": "^0.7.0",
     "@erebos/timeline": "^0.7.0",
-    "@ledgerhq/hw-app-eth": "^4.48.0",
+    "@ledgerhq/hw-app-eth": "^4.54.0",
     "@ledgerhq/hw-transport-node-hid": "^4.48.0",
     "@mainframe/app-manifest": "^0.3.0",
     "@mainframe/app-permissions": "^0.3.0",
