@@ -80,6 +80,6 @@
     "@oclif/dev-cli": "^1.21.3",
     "babel-plugin-inline-json-import": "^0.3.2",
     "del-cli": "^1.1.0",
-    "flow-bin": "^0.95.1"
+    "flow-bin": "^0.98.0"
   }
 }
